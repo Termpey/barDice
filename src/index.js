@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import ui from './index.css';
+import App from './App.js';
 
 
 function dice() {
     return(
-        <dice className={ui.dice}><x className={ui.dvalue}/>1</dice>
+        <App />
     );
 } 
 
-export default dice;
+ReactDOM.render(React.createElement(dice), document.getElementById('root'));
