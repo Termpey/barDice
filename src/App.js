@@ -7,39 +7,20 @@ class App extends Component {
         super();
 
         this.state = {
-            text: 'meowsers',
-            diceValues: []
+            diceValues: [1, 2, 3, 4, 5]
         }
 
         this.roll = this.roll.bind(this);   
-        this.textChanged = this.textChanged.bind(this);
-        this.addDie = this.addDie.bind(this);
     }
 
-    textChanged(event){
-        this.setState({
-            text: event.target.value
-        });
-    }
-
-    addDie(){
-        let newDiceValues = this.state.diceValues.slice(0);
-
-        newDiceValues.push(0);
-
-        this.setState({
-            diceValues: newDiceValues
-        });
-    }
-
-    roll(index){
+    roll(){
         let diceValues = this.state.diceValues.slice(0);
-
         let low = 1;
         let high = 6;
-        let dieValue = Math.floor((Math.random() * (high + 1 - low))) + low;
-
-        diceValues[index] = dieValue;
+        for(var y = 0; y < 5; y++){
+            let dieValue = Math.floor((Math.random() * (high + 1 - low))) + low;
+            diceValues[y] = dieValue;
+        }
 
         this.setState({
             diceValues: diceValues
@@ -49,17 +30,12 @@ class App extends Component {
     render(){
 
         let dice = this.state.diceValues.map((value, index) => {
-            return <Die key={index} value={value} onClick={this.roll.bind(this, index)}></Die>
-        });
-
-        let values = this.state.diceValues.map((value, index) => {
-            return <span key={index}>{value}</span>
+            return <Die key={index} value={value}></Die>
         });
 
         return <div>
-            <button onClick={this.addDie}>Add Die</button>
-            <input type="text" value={this.state.text} onChange={this.textChanged}/>
-            {values}
+            <button onClick={this.roll}>Roll</button>
+            
             {dice}
         </div>;
     }
