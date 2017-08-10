@@ -7,30 +7,30 @@ import fourDie from '../../svg/four_die.svg';
 import fiveDie from '../../svg/five_die.svg';
 import sixDie from '../../svg/six_die.svg';
 
-function Die(props){
+function Die(props) {
 
     let svgSrc;
 
-    switch(props.value){
+    switch (props.value) {
         case 1:
             svgSrc = oneDie;
-        break;
+            break;
         case 2:
             svgSrc = twoDie;
-        break;
+            break;
         case 3:
             svgSrc = threeDie;
-        break;
+            break;
         case 4:
             svgSrc = fourDie;
-        break;
+            break;
         case 5:
             svgSrc = fiveDie;
-        break;
+            break;
         case 6:
             svgSrc = sixDie;
-        break;
-        default: 
+            break;
+        default:
             svgSrc = noDie;
     }
 
@@ -38,7 +38,7 @@ function Die(props){
 
     return (
         <div className="die-container">
-            <img src={svgSrc} alt={props.value} onClick={props.onClick}/>
+            <img src={svgSrc} alt={props.value} onClick={props.onClick} />
         </div>
     );
 }

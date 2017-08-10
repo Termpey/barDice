@@ -4,9 +4,9 @@ import App from './App.js';
 
 
 function dice() {
-    return(
+    return (
         <App />
     );
-} 
+}
 
 ReactDOM.render(React.createElement(dice), document.getElementById('root'));
