@@ -39,6 +39,7 @@ function Score(props) {
     }
 
     bestSofar = two;
+    number = 2
 
     if(three >= bestSofar){
         bestSofar = three

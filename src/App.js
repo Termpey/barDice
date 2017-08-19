@@ -8,41 +8,57 @@ class App extends Component {
         super();
 
         this.state = {
-            diceValues: [1, 2, 3, 4, 5]
+        
+            diceValues: [
+                {value: 1, held: false},
+                {value: 2, held: false},
+                {value: 3, held: false},
+                {value: 4, held: false},
+                {value: 5, held: false},
+            ],
+        
+            score: <Score dice= {[1, 2, 3, 4, 5]}></Score>
         }
 
         this.roll = this.roll.bind(this);
+        this.hold = this.hold.bind(this);
+    }
+
+    hold() {
+
     }
 
     roll() {
-        let diceValues = [];
+        let diceValues = this.state.diceValues.slice();
+        let scoreList = []
         let low = 1;
         let high = 6;
-        for (var y = 0; y < 5; y++) {
-            let dieValue = Math.floor((Math.random() * (high + 1 - low))) + low;
-            diceValues.push(dieValue)
+
+        for (let i in diceValues) {
+            if(diceValues[i].held === false){
+                diceValues[i].value = Math.floor((Math.random() * (high + 1 - low))) + low;
+            }else{
+                continue;
+            }
+            scoreList.push(diceValues[i].value)
         }
 
         this.setState({
-            diceValues: diceValues
+            diceValues: diceValues,
+            score: <Score dice= {scoreList}></Score>
         });
     }
 
     render() {
 
-        let dice1Value = this.state.diceValues[0]
-        let dice2Value = this.state.diceValues[1]
-        let dice3Value = this.state.diceValues[2]
-        let dice4Value = this.state.diceValues[3]
-        let dice5Value = this.state.diceValues[4]
-
-        let dice1 = <Die key={1} value={dice1Value}></Die>
-        let dice2 = <Die key={2} value={dice2Value}></Die>
-        let dice3 = <Die key={3} value={dice3Value}></Die>
-        let dice4 = <Die key={4} value={dice4Value}></Die>
-        let dice5 = <Die key={5} value={dice5Value}></Die>
-
-        let score = <Score dice= {this.state.diceValues}></Score>
+        let dice = this.state.diceValues.map(function(obj,index){
+            
+            if(obj.held === false){
+                return <td onClick={this.hold}>
+                <Die key={index} value={obj.value} />
+                </td>;
+            }
+        });
 
         return <div>
             <button onClick={this.roll}>Roll</button>
@@ -50,15 +66,11 @@ class App extends Component {
             <table>
                 <tr>
                     <th colspan="2" align="left">Rolled Hand</th>
-                    <th colspan="2" align="right">{score}</th>
+                    <th colspan="2" align="right">{this.state.score}</th>
                 </tr>
 
                 <tr>
-                    <td>{dice1}</td>
-                    <td>{dice2}</td>
-                    <td>{dice3}</td>
-                    <td>{dice4}</td>
-                    <td>{dice5}</td>
+                    {dice}
                 </tr>
             </table>
         </div>;
