@@ -24,7 +24,15 @@ class App extends Component {
         this.hold = this.hold.bind(this);
     }
 
-    hold() {
+    hold(index) {
+        
+        let diceValues = this.state.diceValues
+
+        diceValues[index].held = true
+
+        this.setState({
+            diceValues: diceValues
+        })
 
     }
 
@@ -45,18 +53,22 @@ class App extends Component {
 
         this.setState({
             diceValues: diceValues,
-            score: <Score dice= {scoreList}></Score>
+            score: <Score dice= {scoreList} />
         });
     }
 
     render() {
 
         let dice = this.state.diceValues.map(function(obj,index){
-            
             if(obj.held === false){
-                return <td onClick={this.hold}>
-                <Die key={index} value={obj.value} />
+                return <td>
+                    <Die key={index} value={obj.value} onClick={this.hold}/>
                 </td>;
+            }
+            else{
+                return <td onClick={this.hold}>
+                    <Die key={index} value={obj.value} />
+                    </td>;
             }
         });
 
