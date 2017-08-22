@@ -24,16 +24,19 @@ class App extends Component {
         this.hold = this.hold.bind(this);
     }
 
+    generateHoldFunction(index){
+        return this.hold.bind(this, index);
+    }
+
     hold(index) {
         
-        let diceValues = this.state.diceValues
+        let diceValues = this.state.diceValues.slice();
 
-        diceValues[index].held = true
+        diceValues[index].held = !diceValues[index].held;
 
         this.setState({
             diceValues: diceValues
-        })
-
+        });
     }
 
     roll() {
@@ -45,8 +48,6 @@ class App extends Component {
         for (let i in diceValues) {
             if(diceValues[i].held === false){
                 diceValues[i].value = Math.floor((Math.random() * (high + 1 - low))) + low;
-            }else{
-                continue;
             }
             scoreList.push(diceValues[i].value)
         }
@@ -58,17 +59,18 @@ class App extends Component {
     }
 
     render() {
-
+        let localThis = this;
         let dice = this.state.diceValues.map(function(obj,index){
             if(obj.held === false){
                 return <td>
-                    <Die key={index} value={obj.value} onClick={this.hold}/>
+                    <Die key={index} value={obj.value} onClick={localThis.generateHoldFunction(index)}/>
                 </td>;
             }
             else{
-                return <td onClick={this.hold}>
+                return <td onClick={localThis.generateHoldFunction(index)}>
+                    <span>HELD</span>
                     <Die key={index} value={obj.value} />
-                    </td>;
+                </td>;
             }
         });
 
