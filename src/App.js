@@ -10,18 +10,39 @@ class App extends Component {
         this.state = {
         
             diceValues: [
-                {value: 1, held: false},
-                {value: 2, held: false},
-                {value: 3, held: false},
-                {value: 4, held: false},
+                {value: 5, held: false},
+                {value: 5, held: false},
+                {value: 5, held: false},
+                {value: 5, held: false},
                 {value: 5, held: false},
             ],
         
-            score: <Score dice= {[1, 2, 3, 4, 5]}></Score>
+            score: [],
+
+            rolls: 0
         }
 
         this.roll = this.roll.bind(this);
         this.hold = this.hold.bind(this);
+        this.reset = this.reset.bind(this);
+    }
+
+    reset() {
+        let diceValues = [
+            {value: 5, held: false},
+            {value: 5, held: false},
+            {value: 5, held: false},
+            {value: 5, held: false},
+            {value: 5, held: false},
+        ]
+        let score = []
+        let rolls = 0
+       
+        this.setState({
+            diceValues: diceValues,
+            score: score,
+            rolls: rolls
+        });
     }
 
     generateHoldFunction(index){
@@ -31,60 +52,97 @@ class App extends Component {
     hold(index) {
         
         let diceValues = this.state.diceValues.slice();
+        let scoreList = []
+        let count = 0
 
-        diceValues[index].held = !diceValues[index].held;
+        for(let i in diceValues){
+            if(diceValues[i].value === 1){
+                count = count + 1
+            }
+        }
+
+        if(count >= 1){
+            
+            diceValues[index].held = !diceValues[index].held;
+            
+            for(let i in diceValues){
+                if(diceValues[i].held === true){
+                    scoreList.push(diceValues[i].value)
+                }            
+            }
+        }
 
         this.setState({
-            diceValues: diceValues
+            diceValues: diceValues,
+            score: scoreList
         });
     }
 
     roll() {
         let diceValues = this.state.diceValues.slice();
-        let scoreList = []
         let low = 1;
         let high = 6;
+        let rolls = this.state.rolls
 
-        for (let i in diceValues) {
-            if(diceValues[i].held === false){
-                diceValues[i].value = Math.floor((Math.random() * (high + 1 - low))) + low;
+        if(rolls < 3){
+            for (let i in diceValues) {
+                if(diceValues[i].held === false){
+                    diceValues[i].value = Math.floor((Math.random() * (high + 1 - low))) + low;
+                }
             }
-            scoreList.push(diceValues[i].value)
+
+            rolls++
+
         }
 
         this.setState({
             diceValues: diceValues,
-            score: <Score dice= {scoreList} />
+            rolls: rolls
         });
     }
 
     render() {
         let localThis = this;
-        let dice = this.state.diceValues.map(function(obj,index){
+        let diceRoll = this.state.diceValues.map(function(obj,index){
             if(obj.held === false){
                 return <td>
                     <Die key={index} value={obj.value} onClick={localThis.generateHoldFunction(index)}/>
                 </td>;
+            }else{
+                return null
             }
-            else{
-                return <td onClick={localThis.generateHoldFunction(index)}>
-                    <span>HELD</span>
-                    <Die key={index} value={obj.value} />
+        });
+
+        let diceHold = this.state.diceValues.map(function(obj,index){
+            if(obj.held === true){
+                return <td>
+                    <Die key={index} value={obj.value} onClick={localThis.generateHoldFunction(index)}/>
                 </td>;
+            }else{
+                return null
             }
         });
 
         return <div>
             <button onClick={this.roll}>Roll</button>
+            <button onClick={this.reset}>Reset</button>
 
             <table>
                 <tr>
                     <th colspan="2" align="left">Rolled Hand</th>
-                    <th colspan="2" align="right">{this.state.score}</th>
+                    <th colspan="2" align="right"><Score dice = {this.state.score} rolls = {this.state.rolls}/></th>
                 </tr>
 
                 <tr>
-                    {dice}
+                    {diceRoll}
+                </tr>
+
+                <tr>
+                    <th>Hand</th>
+                </tr>
+
+                <tr>
+                    {diceHold}
                 </tr>
             </table>
         </div>;

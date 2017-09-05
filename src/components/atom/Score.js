@@ -2,6 +2,7 @@ import React from 'react';
 
 function Score(props) {
 
+    let rolls = (props.rolls)
     let start = (props.dice);
     let one = 0;
     let two = 0;
@@ -12,7 +13,7 @@ function Score(props) {
     let number = 0;
     let score = '';
     let bestSofar = 0;
-
+    
     if(start.indexOf(1) >= 0){
         for(var y = 0; y <= 4; y++){
             if(start[y] === 1){
@@ -42,7 +43,7 @@ function Score(props) {
     number = 2
 
     if(three >= bestSofar){
-        bestSofar = three
+         bestSofar = three
         number = 3
     }
     if(four >= bestSofar){
@@ -58,7 +59,7 @@ function Score(props) {
         number = 6
     }
 
-    score = String( 'Score: ' + (((bestSofar + one) * 10) + number))
+    score = String( 'Score: ' + (((bestSofar + one) * 10) + number) + ' in ' + rolls)
 
     return(
         <div className="scoreCalculator">
