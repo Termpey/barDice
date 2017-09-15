@@ -19,13 +19,24 @@ class App extends Component {
         
             score: [],
 
-            rolls: 0
+            rolls: 0,
+
+            players: [
+                {name: 'Player 1', score: 0, turn: true},
+                {name: 'Player 2', score: 0, turn: false},
+                {name: 'Player 3', score: 0, turn: false},
+            ]
         }
 
         this.roll = this.roll.bind(this);
         this.hold = this.hold.bind(this);
         this.reset = this.reset.bind(this);
     }
+
+    // actionHandler(action, data){
+    //     let newState = GameManager[action](data);
+    //     this.setState(newState);
+    // }
 
     reset() {
         let diceValues = [
@@ -36,12 +47,20 @@ class App extends Component {
             {value: 5, held: false},
         ]
         let score = []
-        let rolls = 0
+        
+        let rolls = 0;
+
+        let playerScores = [
+            {name: 'Player 1', score: 0, turn: true},
+            {name: 'Player 2', score: 0, turn: false},
+            {name: 'Player 3', score: 0, turn: false},
+        ];
        
         this.setState({
             diceValues: diceValues,
             score: score,
-            rolls: rolls
+            rolls: rolls,
+            playerScores: playerScores
         });
     }
 
@@ -123,30 +142,50 @@ class App extends Component {
             }
         });
 
-        return <div>
-            <button onClick={this.roll}>Roll</button>
-            <button onClick={this.reset}>Reset</button>
-
-            <table>
-                <tr>
-                    <th colspan="2" align="left">Rolled Hand</th>
-                    <th colspan="2" align="right"><Score dice = {this.state.score} rolls = {this.state.rolls}/></th>
-                </tr>
-
-                <tr>
+        return <div className="container">
+            <div className="columns is-desktop">
+                <div className="column is-1 is-offset-1">
+                    <button className="button is-warning" onClick={this.reset}>
+                        Reset
+                    </button>
+                </div>
+                <div className="column is-2 is-offset-3">
+                    <button className="button is-success is-centered" onClick={this.roll}>
+                        Roll
+                    </button>
+                </div>
+                <div className="column is-2 is-offset-2">
+                    <Score rolls={this.state.rolls} dice={this.state.score}/>
+                </div>
+            </div>
+            <div className="columns is-desktop">
+                <div className="column is-5 is-offset-3">
                     {diceRoll}
-                </tr>
-
-                <tr>
-                    <th>Hand</th>
-                </tr>
-
-                <tr>
-                    {diceHold}
-                </tr>
-            </table>
+                </div>
+            </div>
+            <div className="section">
+                <div className="columns is-desktop">
+                    <div className="column is-2 is-offset-1">
+                        Highest Possible
+                    </div>
+                    <div className="column is-1 is-offset-2">
+                        Hand
+                    </div>
+                </div>
+                <div className="columns is-desktop">
+                    <div className="column is-5 is-offset-3">
+                        {diceHold}
+                    </div>
+                </div>
+            </div>
         </div>;
     }
 }
 
 export default App;
+
+{/* <th colspan="2" align="left">Rolled Hand</th>
+<th colspan="2" align="right"></th>
+{diceRoll}
+<th>Hand</th>
+{diceHold} */}
