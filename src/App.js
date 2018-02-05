@@ -1,191 +1,93 @@
 import React, { Component } from 'react';
-import Die from './components/atom/Die.js';
-import Score from './components/atom/Score.js';
+import Die from './components/molecule/Die.js';
+import GM from './components/organism/GameManager.js';
 
 class App extends Component {
 
     constructor() {
         super();
+        this.GM = new GM();
 
-        this.state = {
-        
-            diceValues: [
-                {value: 5, held: false},
-                {value: 5, held: false},
-                {value: 5, held: false},
-                {value: 5, held: false},
-                {value: 5, held: false},
-            ],
-        
-            score: [],
+        this.state = {};
+        this.serverState = undefined;
+        this.actionHandler = this.actionHandler.bind(this);
 
-            rolls: 0,
-
-            players: [
-                {name: 'Player 1', score: 0, turn: true},
-                {name: 'Player 2', score: 0, turn: false},
-                {name: 'Player 3', score: 0, turn: false},
-            ]
-        }
-
-        this.roll = this.roll.bind(this);
-        this.hold = this.hold.bind(this);
-        this.reset = this.reset.bind(this);
+        this.fetchServerState.bind(this)();
     }
 
-    // actionHandler(action, data){
-    //     let newState = GameManager[action](data);
-    //     this.setState(newState);
-    // }
-
-    reset() {
-        let diceValues = [
-            {value: 5, held: false},
-            {value: 5, held: false},
-            {value: 5, held: false},
-            {value: 5, held: false},
-            {value: 5, held: false},
-        ]
-        let score = []
-        
-        let rolls = 0;
-
-        let playerScores = [
-            {name: 'Player 1', score: 0, turn: true},
-            {name: 'Player 2', score: 0, turn: false},
-            {name: 'Player 3', score: 0, turn: false},
-        ];
-       
-        this.setState({
-            diceValues: diceValues,
-            score: score,
-            rolls: rolls,
-            playerScores: playerScores
+    fetchServerState(){
+        let localThis = this;
+        fetch('http://localhost:8080/', {
+            credentials: 'include'
+        }).then(function(response){
+            return response.json();
+        }).then(function(json){
+            localThis.setState(json);
         });
     }
 
-    generateHoldFunction(index){
-        return this.hold.bind(this, index);
-    }
-
-    hold(index) {
+    actionHandler(action, data) {
         
-        let diceValues = this.state.diceValues.slice();
-        let scoreList = []
-        let count = 0
+        let newState = this.GM[action](data);
 
-        for(let i in diceValues){
-            if(diceValues[i].value === 1){
-                count = count + 1
-            }
-        }
-
-        if(count >= 1){
-            
-            diceValues[index].held = !diceValues[index].held;
-            
-            for(let i in diceValues){
-                if(diceValues[i].held === true){
-                    scoreList.push(diceValues[i].value)
-                }            
-            }
-        }
-
-        this.setState({
-            diceValues: diceValues,
-            score: scoreList
-        });
-    }
-
-    roll() {
-        let diceValues = this.state.diceValues.slice();
-        let low = 1;
-        let high = 6;
-        let rolls = this.state.rolls
-
-        if(rolls < 3){
-            for (let i in diceValues) {
-                if(diceValues[i].held === false){
-                    diceValues[i].value = Math.floor((Math.random() * (high + 1 - low))) + low;
-                }
-            }
-
-            rolls++
-
-        }
-
-        this.setState({
-            diceValues: diceValues,
-            rolls: rolls
-        });
+        this.setState(newState);
     }
 
     render() {
         let localThis = this;
-        let diceRoll = this.state.diceValues.map(function(obj,index){
-            if(obj.held === false){
-                return <td>
-                    <Die key={index} value={obj.value} onClick={localThis.generateHoldFunction(index)}/>
-                </td>;
-            }else{
-                return null
+        let diceRoll = this.state.dice ? this.state.dice.map(function (obj, index) {
+            if (obj.held === false) {
+                return <div className='column' key={index}>
+                    <Die value={obj.value} doesHelp={obj.doesHelp} onClick={localThis.actionHandler.bind(localThis, 'hold', index)} />
+                </div>;
+            } else {
+                return <div className='column' key={index}/>
             }
-        });
+        }) : undefined;
 
-        let diceHold = this.state.diceValues.map(function(obj,index){
-            if(obj.held === true){
-                return <td>
-                    <Die key={index} value={obj.value} onClick={localThis.generateHoldFunction(index)}/>
-                </td>;
-            }else{
-                return null
+        let diceHold = this.state.dice ? this.state.dice.map(function (obj, index) {
+            if (obj.held === true) {
+                return <div className='column' key={index}>
+                    <Die  value={obj.value} doesHelp={obj.doesHelp} onClick={localThis.actionHandler.bind(localThis, 'hold', index)} />
+                </div>;
+            } else {
+                return <div className='column' key={index}/>
             }
-        });
+        }) : undefined;
+
 
         return <div className="container">
             <div className="columns is-desktop">
                 <div className="column is-1 is-offset-1">
-                    <button className="button is-warning" onClick={this.reset}>
+                    <button className="button is-warning" onClick={this.actionHandler.bind(this, 'reset')}>
                         Reset
                     </button>
                 </div>
                 <div className="column is-2 is-offset-3">
-                    <button className="button is-success is-centered" onClick={this.roll}>
+                    <button className="button is-success is-centered" onClick={this.actionHandler.bind(this, 'roll')}>
                         Roll
                     </button>
                 </div>
                 <div className="column is-2 is-offset-2">
-                    <Score rolls={this.state.rolls} dice={this.state.score}/>
+                    {this.state.score}
                 </div>
             </div>
             <div className="columns is-desktop">
-                <div className="column is-5 is-offset-3">
-                    {diceRoll}
-                </div>
+                {diceRoll}
             </div>
             <div className="section">
                 <div className="columns is-desktop">
-                    <div className="column is-2 is-offset-1">
-                        Highest Possible
-                    </div>
-                    <div className="column is-1 is-offset-2">
+                    <div className="column is-1 is-offset-5">
                         Hand
                     </div>
                 </div>
                 <div className="columns is-desktop">
-                    <div className="column is-5 is-offset-3">
-                        {diceHold}
-                    </div>
+                    {diceHold}
                 </div>
             </div>
+            {JSON.stringify(this.state, null, 4)}
         </div>;
     }
 }
 
 export default App;
-
-{/* <th colspan="2" align="left">Rolled Hand</th>
-<th colspan="2" align="right"></th>
-{diceRoll}
-<th>Hand</th>
-{diceHold} */}
