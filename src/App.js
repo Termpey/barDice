@@ -27,10 +27,10 @@ class App extends Component {
     }
 
     actionHandler(action, data) {
-        
-        let newState = this.GM[action](data);
-
-        this.setState(newState);
+        let localThis = this;
+        this.GM[action](data).then(function(newState){
+            localThis.setState(newState);
+        });
     }
 
     render() {
@@ -81,7 +81,7 @@ class App extends Component {
                         Hand
                     </div>
                 </div>
-                <div className="columns is-desktop">
+                <div className="columnts is-desktop">
                     {diceHold}
                 </div>
             </div>
