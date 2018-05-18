@@ -36,13 +36,24 @@ export default class GameManager {
             numberHeld: 0
         }
     }
+
     getCurrentState() {
         return clone(this.state)
     }
 
     reset() {
-        this.state = this.defaultState()
-        return clone(this.state)
+        return new Promise(function(resolve, reject){
+            fetch('http://localhost:8080/reset', {
+                credentials: 'include'
+            }).then(function(response){
+                console.log(response.body);
+                return response.json();
+            }).then(function(json){
+                resolve(json);
+            }).catch(function(err){
+                reject(err);
+            });
+        });
     }
 
     hold(data) {

@@ -81,7 +81,7 @@ class App extends Component {
                         Hand
                     </div>
                 </div>
-                <div className="columnts is-desktop">
+                <div className="columns is-desktop">
                     {diceHold}
                 </div>
             </div>
